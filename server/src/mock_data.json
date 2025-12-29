@@ -1,0 +1,44 @@
+[
+    {
+        "id": "sample_01",
+        "product_name": "Packaged Biscuits",
+        "category": "Snacks",
+        "ingredients": "Refined wheat flour, sugar, palm oil, glucose syrup, emulsifier (E471), raising agents (E500, E503), artificial flavour"
+    },
+    {
+        "id": "sample_02",
+        "product_name": "Instant Noodles",
+        "category": "Convenience Food",
+        "ingredients": "Refined wheat flour, palm oil, salt, flavour enhancer (E621), dehydrated vegetables, acidity regulator (E330), spices"
+    },
+    {
+        "id": "sample_03",
+        "product_name": "Flavored Yogurt",
+        "category": "Dairy",
+        "ingredients": "Milk solids, sugar, stabilizer (E440), acidity regulator (E330), artificial flavour, permitted food colour"
+    },
+    {
+        "id": "sample_04",
+        "product_name": "Carbonated Soft Drink",
+        "category": "Beverages",
+        "ingredients": "Carbonated water, sugar, acidity regulator (E338), caffeine, artificial flavour, caramel colour (E150d)"
+    },
+    {
+        "id": "sample_05",
+        "product_name": "Tomato Ketchup",
+        "category": "Condiments",
+        "ingredients": "Tomato paste, sugar, salt, acidity regulator (E260), thickener (E415), preservative (E202)"
+    },
+    {
+        "id": "sample_06",
+        "product_name": "Breakfast Cereal",
+        "category": "Breakfast",
+        "ingredients": "Corn grits, sugar, malt extract, salt, vitamins and minerals, antioxidant (E307)"
+    },
+    {
+        "id": "sample_07",
+        "product_name": "Chocolate Bar",
+        "category": "Confectionery",
+        "ingredients": "Sugar, cocoa butter, cocoa solids, milk solids, emulsifier (E322), artificial flavour"
+    }
+]

@@ -1,0 +1,9 @@
+flask
+google-generativeai
+groq
+python-dotenv
+Pillow
+flask-cors
+requests
+gunicorn
+python-json-logger
