@@ -26,7 +26,8 @@ NutriAI is a sophisticated nutrition analysis platform designed to provide real-
 
 ## API Documentation
 
-### Base URL: `http://localhost:10000`
+### Production Base URL: `<YOUR_BACKEND_URL>`
+### Local Development: `http://localhost:10000`
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
@@ -65,7 +66,7 @@ cd nutriAI
 4. Configure environment variables in `.env`:
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
-   ALLOWED_ORIGINS=https://your-frontend-url.vercel.app,http://localhost:5173
+   ALLOWED_ORIGINS=<YOUR_FRONTEND_URL>,http://localhost:5173
    PORT=10000
    ```
 5. Execute the server:
@@ -82,16 +83,33 @@ cd nutriAI
    ```bash
    npm install
    ```
-3. Start the development environment:
+3. Configure environment variables in `.env`:
+   ```env
+   VITE_API_URL=<YOUR_BACKEND_URL>
+   ```
+4. Start the development environment:
    ```bash
    npm run dev
    ```
 
-## Key Capabilities
-- **Real-time Product Scanning**: Automated ingredient extraction from product packaging images using Gemini Vision capabilities.
-- **Categorized Ingredient Analysis**: Identifying ingredients by health impact (Positive, Neutral, Negative).
-- **Context-Aware Nutritionist**: An AI assistant that understands the current analysis results for highly specific advice.
 - **Dynamic Scoring**: A 0-100 proprietary health score based on ingredient quality.
+
+## Production Deployment
+
+### Backend Deployment
+1. Set the following environment variables on your hosting provider:
+   - `GEMINI_API_KEY`: Your Google Gemini API Key.
+   - `ALLOWED_ORIGINS`: Comma-separated list of your frontend URLs (e.g., `https://your-frontend-app.com`).
+   - `PORT`: Usually `10000` or as required by your provider.
+2. Set the **Health Check Path** to `/health`.
+
+### Frontend Deployment
+1. Set the following environment variable on your hosting provider:
+   - `VITE_API_URL`: The URL of your deployed backend (e.g., `<YOUR_BACKEND_URL>`).
+2. Build the project:
+   ```bash
+   npm run build
+   ```
 
 ---
 © 2025 **NutriAI** by **TechHackers**
