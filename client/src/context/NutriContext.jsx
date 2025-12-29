@@ -42,9 +42,13 @@ export function NutriProvider({ children }) {
         return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
-    const changeViewState = useCallback((newView) => {
+    const changeViewState = useCallback((newView, replace = false) => {
         setViewState(newView);
-        window.history.pushState({ view: newView }, '');
+        if (replace) {
+            window.history.replaceState({ view: newView }, '');
+        } else {
+            window.history.pushState({ view: newView }, '');
+        }
     }, []);
 
 
@@ -56,7 +60,8 @@ export function NutriProvider({ children }) {
 
 
     const performAnalysis = async (payload) => {
-        changeViewState('REASONING');
+        // Use replace for loading state so Back skips it
+        changeViewState('REASONING', true);
         setErrorMsg(null);
 
         // Clear old chat history on new analysis
@@ -74,11 +79,12 @@ export function NutriProvider({ children }) {
             if (data.error) throw new Error(data.details || data.error);
 
             setAnalysisResult(data);
-            changeViewState('CHAT'); // Dashboard is now the primary view
+            // Replace loading with results so Back goes to INPUT
+            changeViewState('CHAT', true);
         } catch (err) {
             console.error(err);
             setErrorMsg(err.message || "Something went wrong.");
-            changeViewState('INPUT');
+            changeViewState('INPUT', true);
         }
     };
 

@@ -95,7 +95,8 @@ export default function InputView() {
     }, []);
 
     const enterMode = (mode) => {
-        window.history.pushState({ mode }, '');
+        // Include NutriContext view so popstate knows we are in INPUT
+        window.history.pushState({ view: 'INPUT', mode }, '');
         if (mode === 'scan') {
             setScanning(true);
         } else {
@@ -287,7 +288,7 @@ export default function InputView() {
                                     </div>
 
                                     {/* Controls */}
-                                    <div className="absolute bottom-0 left-0 w-full px-6 py-6 flex justify-between items-center bg-gradient-to-t from-black/90 via-black/60 to-transparent z-30">
+                                    <div className="absolute bottom-0 left-0 w-full px-6 pt-8 pb-4 flex justify-between items-center bg-gradient-to-t from-black/90 via-black/60 to-transparent z-30">
                                         {scanning ? (
                                             <>
                                                 <button

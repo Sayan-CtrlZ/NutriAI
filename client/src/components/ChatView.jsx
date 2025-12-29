@@ -50,7 +50,7 @@ export default function ChatView() {
     }
 
     return (
-        <div className="w-full h-full max-w-full md:max-w-[95%] mx-auto flex flex-col md:flex-row items-stretch gap-4 p-0 md:p-10 md:px-12 animate-in slide-in-from-bottom-5 duration-700 h-auto md:h-screen md:max-h-[95vh] rounded-none md:rounded-xl chat-view-wrapper will-change-transform">
+        <div className="w-full h-full max-w-full md:max-w-[95%] mx-auto flex flex-col md:flex-row items-stretch gap-4 px-1 md:px-12 p-0 md:p-10 animate-in slide-in-from-bottom-5 duration-700 h-auto md:h-screen md:max-h-[95vh] rounded-none md:rounded-xl chat-view-wrapper will-change-transform">
 
             {/* LEFT PANEL: Image & Assessment */}
             <div className="flex flex-col w-full md:w-[62%] h-auto md:h-full gap-4 pr-0 md:pr-2 flex-none md:flex-1 min-h-0 overflow-visible md:px-0 md:pt-0">
@@ -62,13 +62,13 @@ export default function ChatView() {
                     {/* Action - Moved to Top */}
                     <button
                         onClick={resetFlow}
-                        className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-900/50 hover:shadow-xl hover:shadow-indigo-500/50 transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer ring-offset-2 ring-offset-indigo-950 hover:ring-2 ring-indigo-400 text-sm uppercase tracking-widest border border-transparent shrink-0"
+                        className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-900/50 hover:shadow-xl hover:shadow-indigo-500/50 transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer ring-offset-2 ring-offset-indigo-950 hover:ring-2 ring-indigo-400 text-sm uppercase tracking-widest border border-transparent shrink-0 mt-8 mb-2"
                     >
                         Analyze Another
                     </button>
 
                     {/* MOBILE CARD 1: Image & Verdict */}
-                    <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-2xl md:bg-transparent md:rounded-none flex flex-col md:flex-row gap-4 h-auto md:h-48 shrink-0 border border-white/5 md:border-none">
+                    <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-2xl md:bg-transparent md:rounded-none flex flex-col md:flex-row gap-4 h-auto md:h-48 shrink-0 border border-white/20 md:border-none">
                         {/* Image */}
                         {capturedImageSrc && (
                             <div className="w-full md:w-1/3 h-48 md:h-full rounded-2xl overflow-hidden relative border border-white/5 shadow-inner group shrink-0">
@@ -121,7 +121,7 @@ export default function ChatView() {
 
                     {/* MOBILE CARD 2: Ingredients */}
                     {analysisResult?.key_points?.length > 0 && (
-                        <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-2xl md:bg-transparent md:rounded-none flex flex-col space-y-3 flex-none md:flex-1 overflow-visible md:overflow-y-auto pr-0 md:pr-2 scrollbar-track-transparent h-auto md:min-h-0 border border-white/5 md:border-none">
+                        <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-2xl md:bg-transparent md:rounded-none flex flex-col space-y-3 flex-none md:flex-1 overflow-visible md:overflow-y-auto pr-0 md:pr-2 scrollbar-track-transparent h-auto md:min-h-0 border border-white/20 md:border-none">
                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 md:bg-slate-900/90 bg-transparent backdrop-blur-md py-1 z-10 pl-7">Key Ingredients</h4>
                             {analysisResult.key_points.map((point, idx) => {
                                 let textColor = "text-amber-400";
@@ -136,7 +136,7 @@ export default function ChatView() {
                                 }
 
                                 return (
-                                    <div key={idx} className="bg-white/5 py-3 pr-3 pl-5 mx-2 rounded-lg border border-white/5 flex gap-3 items-start hover:bg-white/10 transition-colors">
+                                    <div key={idx} className="bg-white/5 py-3 pr-3 pl-5 mx-2 rounded-lg border border-white/10 flex gap-3 items-start hover:bg-white/10 transition-colors">
                                         <div className={`w-2 h-2 rounded-full shrink-0 ${dotColor} mt-1.5`} />
                                         <div className="flex-1">
                                             <div className="flex justify-between items-baseline">
