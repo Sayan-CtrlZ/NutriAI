@@ -37,19 +37,37 @@ export default function InputView() {
         setFlashOn(false); // Reset flash when switching cameras
     };
 
+    const stopScanning = async () => {
+        // Explicitly turn off torch before unmounting webcam
+        if (flashOn && webcamRef.current) {
+            const videoTrack = webcamRef.current.video.srcObject?.getVideoTracks()[0];
+            if (videoTrack) {
+                try {
+                    await videoTrack.applyConstraints({ advanced: [{ torch: false }] });
+                } catch (e) {
+                    console.error("Could not turn off torch:", e);
+                }
+            }
+        }
+        setScanning(false);
+        setFlashOn(false);
+    };
+
     // Sub-mode navigation sync
     useEffect(() => {
         const handlePop = () => {
-            // If we're already in selection mode, popstate should be handled by NutriContext
-            // But if we're in a sub-mode, we might want to stay in INPUT and just reset internal state
+            stopScanning();
             setActiveMode(null);
-            setScanning(false);
             setCapturedImage(null);
         };
 
         window.addEventListener('popstate', handlePop);
-        return () => window.removeEventListener('popstate', handlePop);
-    }, []);
+        return () => {
+            window.removeEventListener('popstate', handlePop);
+            // Also cleanup on unmount
+            if (flashOn) stopScanning();
+        };
+    }, [flashOn]);
 
     const enterMode = (mode) => {
         window.history.pushState({ mode }, '');
@@ -167,7 +185,7 @@ export default function InputView() {
                         {/* Webcam Scanning & Preview Mode */}
                         {(scanning || capturedImage) && (
                             <div className="space-y-4 animate-in zoom-in duration-300">
-                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] group">
+                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] md:aspect-video group">
 
                                     {scanning ? (
                                         <Webcam
@@ -190,15 +208,16 @@ export default function InputView() {
                                                     crop={crop}
                                                     onChange={(c) => setCrop(c)}
                                                     onComplete={(c) => setCompletedCrop(c)}
-                                                    className="max-h-[60vh]"
+                                                    className="max-h-[50vh] md:max-h-[40vh]"
                                                 >
                                                     <img
                                                         src={capturedImage}
                                                         onLoad={onImageLoad}
                                                         alt="Crop preview"
-                                                        className="max-w-full max-h-[60vh] object-contain"
+                                                        className="max-w-full max-h-[50vh] md:max-h-[40vh] object-contain"
                                                     />
                                                 </ReactCrop>
+
                                             </div>
                                         </div>
                                     )}
@@ -247,7 +266,7 @@ export default function InputView() {
                                         {scanning ? (
                                             <>
                                                 <button
-                                                    onClick={() => setScanning(false)}
+                                                    onClick={stopScanning}
                                                     className="w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white transition-all active:scale-95"
                                                 >
                                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>

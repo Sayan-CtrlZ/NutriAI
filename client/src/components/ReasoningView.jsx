@@ -15,8 +15,8 @@ export default function ReasoningView() {
     }, []);
 
     return (
-        <div className="max-w-md w-full animate-in fade-in zoom-in duration-500">
-            <div className="bg-indigo-950/40 backdrop-blur-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-500/20 ring-1 ring-white/10 text-center space-y-8 flex flex-col items-center">
+        <div className="max-w-md w-full animate-in fade-in zoom-in duration-500 will-change-transform">
+            <div className="bg-indigo-950/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-500/20 ring-1 ring-white/10 text-center space-y-8 flex flex-col items-center">
 
                 {/* Spinner */}
                 <div className="relative">

@@ -5,13 +5,13 @@ export default function HeroView() {
     const { startApp } = useNutri();
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] w-full animate-in fade-in duration-700">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] w-full animate-in fade-in duration-700 will-change-transform">
 
             {/* 3D Card Container */}
             <div className="group relative w-full max-w-md perspective-1000">
 
                 {/* The Card - Glassmorphism Violet Dark */}
-                <div className="relative bg-indigo-950/40 backdrop-blur-2xl rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 transform preserve-3d border border-indigo-500/20 ring-1 ring-white/10 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:border-violet-400/50">
+                <div className="relative bg-indigo-950/40 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 transform preserve-3d border border-indigo-500/20 ring-1 ring-white/10 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] hover:border-violet-400/50">
 
                     {/* Content */}
                     <div className="flex flex-col items-center text-center space-y-8">
