@@ -22,6 +22,9 @@ class Config:
     # 3. CORS PREFERENCES
     ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
 
+    # 4. SERVER CONFIG
+    PORT = int(os.getenv("PORT", 10000))
+
     if not GEMINI_API_KEY:
         print("WARNING: GEMINI_API_KEY is missing. Scanning will fail.")
     

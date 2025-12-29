@@ -7,6 +7,14 @@ from PIL import Image
 
 main = Blueprint('main', __name__)
 
+@main.route('/', methods=['GET'])
+def index():
+    return jsonify({
+        "message": "Welcome to the NutriAI API",
+        "status": "online",
+        "documentation": "https://github.com/Sayan-CtrlZ/NutriAI"
+    }), 200
+
 @main.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "healthy", "service": "nutriAI-backend"}), 200

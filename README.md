@@ -26,7 +26,7 @@ NutriAI is a sophisticated nutrition analysis platform designed to provide real-
 
 ## API Documentation
 
-### Base URL: `http://localhost:5000`
+### Base URL: `http://localhost:10000`
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
@@ -66,7 +66,7 @@ cd nutriAI
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
    ALLOWED_ORIGINS=https://your-frontend-url.vercel.app,http://localhost:5173
-   PORT=5000
+   PORT=10000
    ```
 5. Execute the server:
    ```bash
