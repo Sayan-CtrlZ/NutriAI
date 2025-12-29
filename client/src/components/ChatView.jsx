@@ -50,7 +50,7 @@ export default function ChatView() {
     }
 
     return (
-        <div className="w-full h-full max-w-[95%] mx-auto flex flex-col md:flex-row items-stretch gap-4 p-4 md:p-10 md:px-12 animate-in slide-in-from-bottom-5 duration-700 h-auto md:h-screen md:max-h-[95vh] rounded-none md:rounded-xl chat-view-wrapper will-change-transform">
+        <div className="w-full h-full max-w-full md:max-w-[95%] mx-auto flex flex-col md:flex-row items-stretch gap-4 p-0 md:p-10 md:px-12 animate-in slide-in-from-bottom-5 duration-700 h-auto md:h-screen md:max-h-[95vh] rounded-none md:rounded-xl chat-view-wrapper will-change-transform">
 
             {/* LEFT PANEL: Image & Assessment */}
             <div className="flex flex-col w-full md:w-[62%] h-auto md:h-full gap-4 pr-0 md:pr-2 flex-none md:flex-1 min-h-0 overflow-visible md:px-0 md:pt-0">

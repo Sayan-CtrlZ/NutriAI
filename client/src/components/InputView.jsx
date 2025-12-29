@@ -210,7 +210,7 @@ export default function InputView() {
                         {/* Webcam Scanning & Preview Mode */}
                         {(scanning || capturedImage) && (
                             <div className="space-y-4 animate-in zoom-in duration-300">
-                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] md:aspect-video group">
+                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] md:aspect-[4/3] group">
 
                                     {scanning ? (
                                         <Webcam
@@ -233,13 +233,13 @@ export default function InputView() {
                                                     crop={crop}
                                                     onChange={(c) => setCrop(c)}
                                                     onComplete={(c) => setCompletedCrop(c)}
-                                                    className="max-h-[50vh] md:max-h-[40vh]"
+                                                    className="max-h-[50vh] md:max-h-[50vh]"
                                                 >
                                                     <img
                                                         src={capturedImage}
                                                         onLoad={onImageLoad}
                                                         alt="Crop preview"
-                                                        className="max-w-full max-h-[50vh] md:max-h-[40vh] object-contain"
+                                                        className="max-w-full max-h-[50vh] md:max-h-[50vh] object-contain"
                                                     />
                                                 </ReactCrop>
 

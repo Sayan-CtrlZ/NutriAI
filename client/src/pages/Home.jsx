@@ -8,7 +8,7 @@ export default function Home() {
     const { viewState, errorMsg, setErrorMsg } = useNutri();
 
     return (
-        <div className="relative min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-indigo-950 overflow-hidden text-white flex flex-col items-center justify-center p-6 transition-all duration-500 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
+        <div className="relative min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-indigo-950 overflow-hidden text-white flex flex-col items-center justify-center p-0 md:p-6 transition-all duration-500 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
             {/* BACK BUTTON */}
             {viewState !== 'HERO' && (
                 <button
