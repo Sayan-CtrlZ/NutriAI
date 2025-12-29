@@ -210,7 +210,7 @@ export default function InputView() {
                         {/* Webcam Scanning & Preview Mode */}
                         {(scanning || capturedImage) && (
                             <div className="space-y-4 animate-in zoom-in duration-300">
-                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] md:aspect-[4/3] group">
+                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] md:aspect-square group">
 
                                     {scanning ? (
                                         <Webcam
