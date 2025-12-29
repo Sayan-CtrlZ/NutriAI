@@ -19,6 +19,9 @@ class Config:
     # Chat Model (Required for Chat)
     GROQ_CHAT_MODEL = os.getenv("GROQ_CHAT_MODEL", "llama-3.3-70b-versatile")
 
+    # 3. CORS PREFERENCES
+    ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+
     if not GEMINI_API_KEY:
         print("WARNING: GEMINI_API_KEY is missing. Scanning will fail.")
     

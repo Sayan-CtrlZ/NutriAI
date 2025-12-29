@@ -6,7 +6,8 @@ def create_app():
     # Enable CORS
     from flask_cors import CORS
     # Allow specific origin with credentials
-    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}}, supports_credentials=True)
+    from .config import Config
+    CORS(app, resources={r"/*": {"origins": Config.ALLOWED_ORIGINS}}, supports_credentials=True)
 
     # Properties Logging (Production Ready)
     import logging

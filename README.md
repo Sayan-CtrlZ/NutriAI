@@ -65,6 +65,7 @@ cd nutriAI
 4. Configure environment variables in `.env`:
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
+   ALLOWED_ORIGINS=https://your-frontend-url.vercel.app,http://localhost:5173
    PORT=5000
    ```
 5. Execute the server:
