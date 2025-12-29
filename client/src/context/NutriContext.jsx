@@ -2,7 +2,11 @@ import { createContext, useState, useContext } from 'react';
 
 const NutriContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (!API_URL) {
+    console.warn("⚠️ VITE_API_URL is not defined in your .env file! Frontend will fail to connect to backend.");
+}
 
 export function NutriProvider({ children }) {
     // --- STATE ---
