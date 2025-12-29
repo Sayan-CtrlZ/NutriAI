@@ -37,10 +37,9 @@ export default function InputView() {
         setFlashOn(false); // Reset flash when switching cameras
     };
 
-    const stopScanning = async () => {
-        // Explicitly turn off torch before unmounting webcam
-        if (flashOn && webcamRef.current) {
-            const videoTrack = webcamRef.current.video.srcObject?.getVideoTracks()[0];
+    const turnOffFlash = async (wasOn, webcam) => {
+        if (wasOn && webcam?.current) {
+            const videoTrack = webcam.current.video.srcObject?.getVideoTracks()[0];
             if (videoTrack) {
                 try {
                     await videoTrack.applyConstraints({ advanced: [{ torch: false }] });
@@ -49,6 +48,11 @@ export default function InputView() {
                 }
             }
         }
+    };
+
+    const stopScanning = async () => {
+        // Explicitly turn off torch hardware
+        await turnOffFlash(flashOn, webcamRef);
         setScanning(false);
         setFlashOn(false);
     };
@@ -56,7 +60,17 @@ export default function InputView() {
     // Sub-mode navigation sync
     useEffect(() => {
         const handlePop = () => {
-            stopScanning();
+            // Hardware back triggers a full stop
+            setScanning(prev => {
+                if (prev) {
+                    // We can't easily wait for turnOffFlash here since setScanning is sync,
+                    // but we can at least trigger the reset.
+                    // The ref-based cleanup on unmount will handle the hardware.
+                    return false;
+                }
+                return prev;
+            });
+            setFlashOn(false);
             setActiveMode(null);
             setCapturedImage(null);
         };
@@ -64,10 +78,21 @@ export default function InputView() {
         window.addEventListener('popstate', handlePop);
         return () => {
             window.removeEventListener('popstate', handlePop);
-            // Also cleanup on unmount
-            if (flashOn) stopScanning();
         };
-    }, [flashOn]);
+    }, []);
+
+    // Dedicated Component Unmount Hardware Cleanup
+    useEffect(() => {
+        return () => {
+            // Unconditionally try to stop torch on unmount
+            if (webcamRef.current) {
+                const videoTrack = webcamRef.current.video.srcObject?.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.applyConstraints({ advanced: [{ torch: false }] }).catch(() => { });
+                }
+            }
+        };
+    }, []);
 
     const enterMode = (mode) => {
         window.history.pushState({ mode }, '');
