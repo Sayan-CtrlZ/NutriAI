@@ -9,6 +9,15 @@ export default function Home() {
 
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-indigo-950 overflow-hidden text-white flex flex-col items-center justify-center p-6 transition-all duration-500 selection:bg-fuchsia-500/30 selection:text-fuchsia-200">
+            {/* BACK BUTTON */}
+            {viewState !== 'HERO' && (
+                <button
+                    onClick={() => window.history.back()}
+                    className="fixed top-6 left-6 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white transition-all active:scale-95 shadow-lg group pointer-events-auto"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-0.5 transition-transform"><path d="m15 18-6-6 6-6" /></svg>
+                </button>
+            )}
 
             {/* Animated Background Blobs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">

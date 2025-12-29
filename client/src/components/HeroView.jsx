@@ -19,8 +19,9 @@ export default function HeroView() {
                         {/* Top Section */}
                         <div className="space-y-4">
                             {/* Logo / Icon */}
-                            <div className="flex items-center justify-center transform transition-transform group-hover:scale-110 duration-500 mx-auto">
+                            <div className="flex items-center justify-center gap-4 transform transition-transform group-hover:scale-110 duration-500 mx-auto">
                                 <img src={logo} alt="NutriAI Logo" className="w-14 h-14 md:w-16 md:h-16 drop-shadow-md brightness-110 filter" />
+                                <span className="text-4xl md:text-5xl font-black text-white tracking-tighter drop-shadow-xl gradient-text bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">NutriAI</span>
                             </div>
 
                             {/* Main Headline */}

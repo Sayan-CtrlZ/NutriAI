@@ -1,4 +1,5 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
+
 
 const NutriContext = createContext();
 
@@ -10,7 +11,7 @@ if (!API_URL) {
 
 export function NutriProvider({ children }) {
     // --- STATE ---
-    const [viewState, setViewState] = useState('HERO'); // 'HERO', 'INPUT', 'REASONING', 'EXPLANATION'
+    const [viewState, setViewState] = useState('HERO'); // 'HERO', 'INPUT', 'REASONING', 'CHAT'
     const [analysisResult, setAnalysisResult] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [chatHistory, setChatHistory] = useState([]);
@@ -18,15 +19,46 @@ export function NutriProvider({ children }) {
     const [capturedImageSrc, setCapturedImageSrc] = useState(null);
     const [chatAbortController, setChatAbortController] = useState(null);
 
+    // Synchronize with history API
+    useEffect(() => {
+        const handlePopState = (event) => {
+            const newView = (event.state && event.state.view) ? event.state.view : 'HERO';
+            setViewState(newView);
+
+            // Clear specific data when moving back to selection or home
+            if (newView === 'INPUT' || newView === 'HERO') {
+                setAnalysisResult(null);
+                setChatHistory([]);
+                setCapturedImageSrc(null);
+                setErrorMsg(null);
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+
+        // Push initial state
+        window.history.replaceState({ view: 'HERO' }, '');
+
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
+    const changeViewState = useCallback((newView) => {
+        setViewState(newView);
+        window.history.pushState({ view: newView }, '');
+    }, []);
+
+
     // --- ACTIONS ---
 
     const startApp = () => {
-        setViewState('INPUT');
+        changeViewState('INPUT');
     };
 
+
     const performAnalysis = async (payload) => {
-        setViewState('REASONING');
+        changeViewState('REASONING');
         setErrorMsg(null);
+
         // Clear old chat history on new analysis
         setChatHistory([]);
 
@@ -42,13 +74,14 @@ export function NutriProvider({ children }) {
             if (data.error) throw new Error(data.details || data.error);
 
             setAnalysisResult(data);
-            setViewState('CHAT'); // Dashboard is now the primary view
+            changeViewState('CHAT'); // Dashboard is now the primary view
         } catch (err) {
             console.error(err);
             setErrorMsg(err.message || "Something went wrong.");
-            setViewState('INPUT');
+            changeViewState('INPUT');
         }
     };
+
 
 
     const sendChatMessage = async (message) => {
@@ -111,20 +144,26 @@ export function NutriProvider({ children }) {
     };
 
     const resetFlow = () => {
-        setViewState('INPUT');
+        changeViewState('INPUT');
         setAnalysisResult(null);
         setErrorMsg(null);
         setChatHistory([]);
         setCapturedImageSrc(null);
     };
 
+    const goBack = () => {
+        window.history.back();
+    };
+
+
     const goHome = () => {
-        setViewState('HERO');
+        changeViewState('HERO');
         setAnalysisResult(null);
         setErrorMsg(null);
         setChatHistory([]);
         setCapturedImageSrc(null);
     }
+
 
     // --- HELPERS ---
     const toBase64 = (file) => new Promise((resolve, reject) => {
@@ -165,12 +204,13 @@ export function NutriProvider({ children }) {
 
     const value = {
         viewState,
-        setViewState, // Exposed to allow manual switching to CHAT
+        setViewState: changeViewState, // Use the history-aware version
         analysisResult,
         errorMsg,
         setErrorMsg,
         startApp,
         goHome,
+        goBack,
         uploadImage,
         analyzeText,
         analyzeCameraCapture,
@@ -181,6 +221,7 @@ export function NutriProvider({ children }) {
         cancelChat,
         capturedImageSrc
     };
+
 
     return (
         <NutriContext.Provider value={value}>

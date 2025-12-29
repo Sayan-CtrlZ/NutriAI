@@ -50,14 +50,14 @@ export default function ChatView() {
     }
 
     return (
-        <div className="w-full h-full max-w-[95%] mx-auto flex flex-col md:flex-row items-stretch gap-6 p-0 md:p-10 md:px-12 animate-in slide-in-from-bottom-5 duration-700 h-auto md:h-screen md:max-h-[95vh] rounded-none md:rounded-xl chat-view-wrapper">
+        <div className="w-full h-full max-w-[95%] mx-auto flex flex-col md:flex-row items-stretch gap-4 p-4 md:p-10 md:px-12 animate-in slide-in-from-bottom-5 duration-700 h-auto md:h-screen md:max-h-[95vh] rounded-none md:rounded-xl chat-view-wrapper">
 
             {/* LEFT PANEL: Image & Assessment */}
-            <div className="flex flex-col w-full md:w-[62%] h-auto md:h-full gap-6 pr-0 md:pr-2 flex-none md:flex-1 min-h-0 overflow-visible md:px-0 md:pt-0">
+            <div className="flex flex-col w-full md:w-[62%] h-auto md:h-full gap-4 pr-0 md:pr-2 flex-none md:flex-1 min-h-0 overflow-visible md:px-0 md:pt-0">
 
                 {/* Unified Dashboard Card (Desktop) / Transparent Container (Mobile) */}
                 {/* Unified Dashboard Card (Desktop) / Transparent Container (Mobile) */}
-                <div className="contents md:flex md:flex-col md:gap-6 md:flex-1 md:bg-slate-900/70 md:backdrop-blur-xl md:p-6 md:shadow-xl md:overflow-hidden md:min-h-0 md:rounded-3xl md:h-full md:border md:border-white/10">
+                <div className="contents md:flex md:flex-col md:gap-4 md:flex-1 md:bg-slate-900/70 md:backdrop-blur-xl md:p-6 md:shadow-xl md:overflow-hidden md:min-h-0 md:rounded-3xl md:h-full md:border md:border-white/10">
 
                     {/* Action - Moved to Top */}
                     <button
@@ -68,7 +68,7 @@ export default function ChatView() {
                     </button>
 
                     {/* MOBILE CARD 1: Image & Verdict */}
-                    <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-none md:bg-transparent md:rounded-none flex flex-col md:flex-row gap-6 h-auto md:h-48 shrink-0 border-none">
+                    <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-2xl md:bg-transparent md:rounded-none flex flex-col md:flex-row gap-4 h-auto md:h-48 shrink-0 border border-white/5 md:border-none">
                         {/* Image */}
                         {capturedImageSrc && (
                             <div className="w-full md:w-1/3 h-48 md:h-full rounded-2xl overflow-hidden relative border border-white/5 shadow-inner group shrink-0">
@@ -121,7 +121,7 @@ export default function ChatView() {
 
                     {/* MOBILE CARD 2: Ingredients */}
                     {analysisResult?.key_points?.length > 0 && (
-                        <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-none md:bg-transparent md:rounded-none flex flex-col space-y-3 flex-none md:flex-1 overflow-visible md:overflow-y-auto pr-0 md:pr-2 scrollbar-track-transparent h-auto md:min-h-0 border-none">
+                        <div className="w-full bg-slate-900/40 backdrop-blur-md p-4 md:p-0 rounded-2xl md:bg-transparent md:rounded-none flex flex-col space-y-3 flex-none md:flex-1 overflow-visible md:overflow-y-auto pr-0 md:pr-2 scrollbar-track-transparent h-auto md:min-h-0 border border-white/5 md:border-none">
                             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 md:bg-slate-900/90 bg-transparent backdrop-blur-md py-1 z-10 pl-7">Key Ingredients</h4>
                             {analysisResult.key_points.map((point, idx) => {
                                 let textColor = "text-amber-400";
@@ -156,7 +156,7 @@ export default function ChatView() {
             </div>
 
             {/* RIGHT PANEL: Chat Interface */}
-            <div className="w-full md:w-[38%] flex flex-col bg-slate-900/40 backdrop-blur-md rounded-none md:rounded-3xl relative overflow-hidden flex-1 min-h-[450px]">
+            <div className="w-full md:w-[38%] flex flex-col bg-slate-900/40 backdrop-blur-md rounded-3xl md:rounded-3xl relative overflow-hidden flex-1 min-h-[450px] border border-white/5">
                 {/* Header */}
                 <div className="p-5 border-b border-slate-500/20 bg-slate-900/30 flex items-center gap-3">
                     <div className="bg-gradient-to-br from-violet-500 to-indigo-500 w-10 h-10 rounded-full flex items-center justify-center shadow-lg">

@@ -1,4 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+
 import Webcam from 'react-webcam';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -24,6 +25,8 @@ export default function InputView() {
     const [facingMode, setFacingMode] = useState("environment");
     const [capturedImage, setCapturedImage] = useState(null);
     const [textVal, setTextVal] = useState("");
+    const [flashOn, setFlashOn] = useState(false);
+
 
     // ReactCrop state
     const [crop, setCrop] = useState();
@@ -31,12 +34,59 @@ export default function InputView() {
 
     const toggleCamera = () => {
         setFacingMode(prev => prev === "user" ? "environment" : "user");
+        setFlashOn(false); // Reset flash when switching cameras
+    };
+
+    // Sub-mode navigation sync
+    useEffect(() => {
+        const handlePop = () => {
+            // If we're already in selection mode, popstate should be handled by NutriContext
+            // But if we're in a sub-mode, we might want to stay in INPUT and just reset internal state
+            setActiveMode(null);
+            setScanning(false);
+            setCapturedImage(null);
+        };
+
+        window.addEventListener('popstate', handlePop);
+        return () => window.removeEventListener('popstate', handlePop);
+    }, []);
+
+    const enterMode = (mode) => {
+        window.history.pushState({ mode }, '');
+        if (mode === 'scan') {
+            setScanning(true);
+        } else {
+            setActiveMode(mode);
+        }
+    };
+
+
+    const toggleFlash = async () => {
+        if (!webcamRef.current) return;
+        const videoTrack = webcamRef.current.video.srcObject?.getVideoTracks()[0];
+        if (videoTrack) {
+            try {
+                const capabilities = videoTrack.getCapabilities();
+                if (capabilities.torch) {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ torch: !flashOn }]
+                    });
+                    setFlashOn(!flashOn);
+                } else {
+                    console.warn("Torch not supported on this track");
+                    alert("Flashlight not supported on this device/camera.");
+                }
+            } catch (err) {
+                console.error("Flash error:", err);
+            }
+        }
     };
 
     const handleRetake = () => {
         setCapturedImage(null);
         setScanning(true);
         setCompletedCrop(null);
+        setFlashOn(false);
     };
 
     function onImageLoad(e) {
@@ -100,9 +150,9 @@ export default function InputView() {
     }, [webcamRef]);
 
     return (
-        <div className="max-w-md w-full animate-in fade-in zoom-in duration-500">
+        <div className="max-w-xl w-full animate-in fade-in zoom-in duration-500">
             {/* Glassmorphism Card - Violet Dark Theme */}
-            <div className="bg-indigo-950/40 backdrop-blur-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-500/20 ring-1 ring-white/10 relative overflow-hidden">
+            <div className="bg-indigo-950/40 backdrop-blur-2xl rounded-3xl p-6 md:p-10 shadow-2xl border border-indigo-500/20 ring-1 ring-white/10 relative overflow-hidden">
                 <div className="text-center space-y-8 relative z-10">
                     <div className="space-y-3">
                         {/* Header with Logo */}
@@ -117,7 +167,7 @@ export default function InputView() {
                         {/* Webcam Scanning & Preview Mode */}
                         {(scanning || capturedImage) && (
                             <div className="space-y-4 animate-in zoom-in duration-300">
-                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[3/4] group">
+                                <div className="relative rounded-xl overflow-hidden bg-black shadow-2xl ring-2 ring-indigo-500/50 aspect-[2/3] group">
 
                                     {scanning ? (
                                         <Webcam
@@ -168,6 +218,20 @@ export default function InputView() {
                                         {/* Scanning Animation (Only when scanning) */}
                                         {scanning && (
                                             <div className="absolute top-0 left-0 w-full h-[2px] bg-violet-400 shadow-[0_0_20px_rgba(167,139,250,0.8)] animate-scan opacity-80"></div>
+                                        )}
+
+                                        {/* Flash Toggle Control */}
+                                        {scanning && facingMode === "environment" && (
+                                            <button
+                                                onClick={toggleFlash}
+                                                className={`absolute top-4 right-4 z-40 p-3 rounded-full backdrop-blur-md transition-all active:scale-90 border pointer-events-auto ${flashOn ? 'bg-amber-400 text-black border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.5)]' : 'bg-black/40 text-white border-white/20 hover:bg-black/60'}`}
+                                            >
+                                                {flashOn ? (
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+                                                ) : (
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+                                                )}
+                                            </button>
                                         )}
 
                                         {/* Guide Text */}
@@ -234,8 +298,9 @@ export default function InputView() {
                                 {/* Scan & Upload Split Row */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <button
-                                        onClick={() => setScanning(true)}
+                                        onClick={() => enterMode('scan')}
                                         className="relative bg-gradient-to-br from-indigo-200/20 to-violet-200/10 border border-white/20 text-white py-5 rounded-2xl shadow-lg shadow-indigo-900/50 hover:shadow-indigo-500/30 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex flex-col items-center justify-center gap-2 backdrop-blur-md group overflow-hidden"
+
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                         <div className="relative z-10 flex flex-col items-center gap-2">
@@ -272,8 +337,9 @@ export default function InputView() {
                                 />
 
                                 <button
-                                    onClick={() => setActiveMode('paste')}
+                                    onClick={() => enterMode('paste')}
                                     className="relative bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border border-purple-500/30 text-purple-100 py-5 rounded-2xl shadow-lg shadow-purple-900/50 hover:shadow-purple-500/30 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex justify-center backdrop-blur-md group overflow-hidden"
+
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                     <div className="w-64 flex items-center gap-4 pl-6 relative z-10 transition-opacity">
@@ -283,8 +349,9 @@ export default function InputView() {
                                 </button>
 
                                 <button
-                                    onClick={() => setActiveMode('sample')}
+                                    onClick={() => enterMode('sample')}
                                     className="relative bg-gradient-to-br from-pink-500/20 to-rose-500/20 border border-pink-500/30 text-pink-100 py-4 rounded-2xl shadow-md shadow-pink-900/50 hover:shadow-pink-500/30 transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex justify-center backdrop-blur-md group overflow-hidden"
+
                                 >
                                     <div className="w-64 flex items-center gap-4 pl-6 relative z-10">
                                         <img src={sampleIcon} alt="Sample" className="w-7 h-7 shrink-0 group-hover:scale-110 transition-transform duration-300 brightness-0 invert opacity-80" />
