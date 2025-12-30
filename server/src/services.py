@@ -1,136 +1,94 @@
 import os
 import json
 import logging
-from groq import Groq
+import google.generativeai as genai
 from .config import Config
 
-# Configure Groq
-client = Groq(api_key=Config.GROQ_API_KEY)
+# Configure Gemini
+genai.configure(api_key=Config.GEMINI_API_KEY)
 
+SYSTEM_PROMPT = """You are an AI nutrition expert. You must talk in the SIMPLEST ENGLISH (like talking to a 10-year old).
 
-SYSTEM_PROMPT = """You are an AI-native reasoning engine designed to help people understand food ingredients.
-
-Your goal is to analyze the provided ingredients and summarize their overall health impact.
+Your goal is to help people understand if a food is good or bad for them.
 
 CORE RULES:
-- Analyze what is ACTUALLY present. Do not assume or hallucinate ingredients (like sugar) if they are not listed.
-- If the food is simple/healthy (e.g., "Banana"), say it is clean and nutritious.
-- If there are risks, identify the top 1-2 concenrs (e.g., additives, sugar, sodium).
-- Provide a single, distinct sentence summary.
+- Use VERY SIMPLE English words.
+- Tell which {neg}diseases{/neg} can happen if they eat bad things too much.
+  * Example: "Too much sugar can cause {neg}Diabetes{/neg}."
+  * Example: "Too much salt can cause {neg}High Blood Pressure{/neg}."
+- Be positive! If something is okay for normal use, say it.
+  * Example: "It is {pos}not so much harmful{/pos} if you eat it once in a while. But frequent use may cause {neg}heart problems{/neg}."
+- If the food is healthy, say it is {pos}great for the body{/pos} and why.
+
+SCORING RULES (BE PRACTICAL):
+- 80-100: Very healthy (fruits, vegetables, simple nuts, oats).
+- 60-79: Normal everyday food. Decent ingredients but maybe some sugar or salt (Milk, whole wheat bread, plain biscuits).
+- 40-59: Occasional treat. High in sugar, salt, or fats (Sodas, very sweet cookies).
+- Below 40: Only for very harmful things or very high chemical content.
+- DO NOT give a very low score just for one bad ingredient. If most things are okay, keep the score practical (60-80).
 
 You MUST return output in the following strict JSON format:
 
 {
-  "summary": "A single sentence summary. Highlight ingredients using tags: {neg}harmful{/neg}, {med}caution{/med}, {pos}beneficial{/pos}.",
+  "summary": "A very simple sentence. Highlight ingredients using tags: {neg}harmful{/neg}, {med}caution{/med}, {pos}beneficial{/pos}. Also tag diseases as {neg}disease_name{/neg}.",
   "health_score": 85, 
   "key_points": [
     {
-      "ingredient": "Name of specific ingredient found",
-      "why_it_matters": "Brief explanation of its effect",
+      "ingredient": "Name of specific ingredient",
+      "why_it_matters": "A very simple explanation. Mention diseases if applicable.",
       "certainty_level": "high | medium | low",
       "impact": "positive | negative | neutral"
     }
   ],
   "decision_guidance": [
-    "Short tip 1",
-    "Short tip 2"
+    "Simple tip 1 (Example: 'Eat this only sometimes')",
+    "Simple tip 2"
   ]
 }
 
-Impact Classification Rules:
-- "negative": Harmful chemicals, artificial additives with risks, high sugar, excessive sodium, trans fats.
-- "positive": Whole foods, nutritious ingredients, clean sources (e.g., "Whole Wheat", "Banana", "Protein").
-- "neutral": Harmless additives, water, common staples with no major benefit or harm.
-- "health_score": Integer 0-100 (0=Toxic, 100=Superfood).
+Tone: very simple, friendly, helpful, and honest."""
 
-Text Highlighting:
-- ALWAYS wrap specific ingredient names in the 'summary' text with tags based on their impact.
-- Example: "This product contains {neg}High Fructose Corn Syrup{/neg} but has {pos}Whole Oats{/pos}."
-
-Tone: objective, factual, helpful."""
-
-def analyze_with_groq(ingredients_text=None, image_base64=None, history=None):
+def analyze_with_gemini(ingredients_text=None, image_base64=None, history=None):
     """
-    Sends input to Groq. Supports text and image (base64).
+    Sends input to Gemini. Supports text and image (base64).
     """
-    messages = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT
-        }
-    ]
+    model = genai.GenerativeModel(
+        model_name=Config.GEMINI_VISION_MODEL,
+        generation_config={"response_mime_type": "application/json"}
+    )
 
-    user_content = []
+    contents = []
     
     # 1. Add Image if available
     if image_base64:
-        # Use Vision Model
-        model_to_use = Config.GROQ_VISION_MODEL
-        user_content.append({
-            "type": "image_url",
-            "image_url": {
-                "url": f"data:image/jpeg;base64,{image_base64}"
-            }
+        contents.append({
+            "mime_type": "image/jpeg",
+            "data": image_base64
         })
-        user_content.append({
-            "type": "text",
-            "text": "Analyze these ingredients."
-        })
+        contents.append("Analyze these ingredients based on the image.")
     # 2. Add Text if available
     elif ingredients_text:
-        model_to_use = Config.GROQ_VISION_MODEL
-        user_content.append({
-            "type": "text",
-            "text": ingredients_text
-        })
+        contents.append(f"Analyze these ingredients: {ingredients_text}")
     else:
         return {"error": "No input provided"}
 
-    messages.append({
-        "role": "user",
-        "content": user_content
-    })
-
+    # Add system prompt and context
+    prompt = f"{SYSTEM_PROMPT}\n\nUSER INPUT:\n"
+    
     try:
-        completion = client.chat.completions.create(
-            model=model_to_use,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1024,
-            top_p=1,
-            stream=False,
-            # response_format={"type": "json_object"}, # REMOVED: Llama Guard cannot output JSON
-            stop=None,
-        )
-
-        response_text = completion.choices[0].message.content
-        try:
-            return json.loads(response_text)
-        except json.JSONDecodeError:
-            # If model returns non-JSON (like Llama Guard returning "safe"), wrap it.
-            return {
-                "summary": f"Analysis complete. Model Output: {response_text}",
-                "health_score": 50, # Neutral score as fallback
-                "key_points": [
-                    {
-                        "ingredient": "Model Output",
-                        "why_it_matters": response_text,
-                        "certainty_level": "medium",
-                        "impact": "neutral"
-                    }
-                ]
-            }
+        response = model.generate_content([prompt] + contents)
+        return json.loads(response.text)
 
     except Exception as e:
-        logging.error(f"Groq Analysis Error: {e}")
+        logging.error(f"Gemini Analysis Error: {e}")
         return {
-            "error": "Groq Analysis Failed",
-            "details": f"{str(e)}"
+            "error": "Gemini Analysis Failed",
+            "details": str(e)
         }
 
-def chat_with_groq(message, history=None, context=None):
+def chat_with_gemini(message, history=None, context=None):
     """
-    Handles natural language follow-up questions using Groq.
+    Handles natural language follow-up questions using Gemini.
     """
     try:
         instruction = """You are NutriAI, a helpful nutrition assistant focused exclusively on health, nutrition, and food product queries. 
@@ -148,36 +106,26 @@ def chat_with_groq(message, history=None, context=None):
         if context:
             instruction += f"\n\nCONTEXT FROM ANALYSIS:\n{context}\n\nUse the above context to answer user questions about the specific product they scanned."
 
-        messages = [
-            {"role": "system", "content": instruction}
-        ]
+        model = genai.GenerativeModel(
+            model_name=Config.GEMINI_CHAT_MODEL,
+            system_instruction=instruction
+        )
 
-        # Add history
+        # Convert history format
+        gemini_history = []
         if history:
             for msg in history:
-                role = "assistant" if msg.get("role") == "model" else "user"
-                # history parts is a list of strings, join them
-                content = " ".join(msg.get("parts", []))
-                messages.append({"role": role, "content": content})
+                role = "model" if msg.get("role") == "assistant" or msg.get("role") == "model" else "user"
+                parts = msg.get("parts", [])
+                if isinstance(parts, list):
+                    gemini_history.append({"role": role, "parts": parts})
+                else:
+                    gemini_history.append({"role": role, "parts": [str(parts)]})
 
-        # Add current message
-        messages.append({"role": "user", "content": message})
-
-        # Use Chat Model
-        chat_model = Config.GROQ_CHAT_MODEL 
-
-        completion = client.chat.completions.create(
-            model=chat_model,
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1024,
-            top_p=1,
-            stream=False,
-            stop=None,
-        )
+        chat = model.start_chat(history=gemini_history)
+        response = chat.send_message(message)
         
-        reply = completion.choices[0].message.content
-        return {"reply": reply}
+        return {"reply": response.text}
 
     except Exception as e:
         logging.error(f"Chat Error: {e}")

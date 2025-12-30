@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .services import analyze_with_groq, chat_with_groq
+from .services import analyze_with_gemini, chat_with_gemini
 from .utils import MOCK_SAMPLES, get_sample_by_id
 import base64
 import io
@@ -51,11 +51,8 @@ def analyze():
     if not has_text and not has_image:
         return jsonify({"error": "Provide 'ingredients', 'image_base64', or 'sample_id'"}), 400
 
-    # 2. Call Groq Service (pass base64 string directly)
-    # We can still validate base64 if needed, but Groq handles the string.
-    
-    # Pass text, image_base64, AND history to service
-    result = analyze_with_groq(
+    # 2. Call Gemini Service
+    result = analyze_with_gemini(
         ingredients_text=ingredients, 
         image_base64=image_base64,
         history=history
@@ -63,11 +60,6 @@ def analyze():
 
     # 3. Handle Errors
     if "error" in result:
-        # Check if it's the specific invalid JSON handling requirement
-        if result.get("error") == "Invalid JSON from Groq":
-             return jsonify(result), 500
-        
-        # Generic error from service
         return jsonify(result), 500
 
     # 4. Success
@@ -88,8 +80,7 @@ def chat():
         return jsonify({"error": "Message is required"}), 400
         
     # Call Chat Service
-    from .services import chat_with_groq
-    result = chat_with_groq(message, history, context)
+    result = chat_with_gemini(message, history, context)
     
     if "error" in result:
         return jsonify(result), 500

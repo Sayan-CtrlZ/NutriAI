@@ -349,7 +349,7 @@ export default function InputView() {
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                         <div className="relative z-10 flex flex-col items-center gap-2">
-                                            <img src={cameraIcon} alt="Scan" className="w-8 h-8 shrink-0 group-hover:scale-110 transition-transform duration-300 brightness-0 invert opacity-80" />
+                                            <img src={cameraIcon} alt="Scan" className="w-8 h-8 shrink-0 group-hover:scale-110 transition-transform duration-300 opacity-90" />
                                             <span className="font-bold text-lg text-white drop-shadow-sm">Scan</span>
                                         </div>
                                     </button>
@@ -360,7 +360,7 @@ export default function InputView() {
                                     >
                                         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                         <div className="relative z-10 flex flex-col items-center gap-2">
-                                            <img src={uploadIcon} alt="Upload" className="w-8 h-8 shrink-0 group-hover:scale-110 transition-transform duration-300 brightness-0 invert opacity-80" />
+                                            <img src={uploadIcon} alt="Upload" className="w-8 h-8 shrink-0 group-hover:scale-110 transition-transform duration-300 opacity-90" />
                                             <span className="font-bold text-lg text-white drop-shadow-sm">Upload</span>
                                         </div>
                                     </button>
@@ -388,7 +388,7 @@ export default function InputView() {
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                                     <div className="w-64 flex items-center gap-4 pl-6 relative z-10 transition-opacity">
-                                        <img src={pasteIcon} alt="Paste" className="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform duration-300 brightness-0 invert opacity-80" />
+                                        <img src={pasteIcon} alt="Paste" className="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform duration-300 opacity-90" />
                                         <span className="font-bold text-lg text-purple-100 drop-shadow-sm">Paste Ingredients</span>
                                     </div>
                                 </button>
@@ -399,7 +399,7 @@ export default function InputView() {
 
                                 >
                                     <div className="w-64 flex items-center gap-4 pl-6 relative z-10">
-                                        <img src={sampleIcon} alt="Sample" className="w-7 h-7 shrink-0 group-hover:scale-110 transition-transform duration-300 brightness-0 invert opacity-80" />
+                                        <img src={sampleIcon} alt="Sample" className="w-7 h-7 shrink-0 group-hover:scale-110 transition-transform duration-300 opacity-90" />
                                         <span className="font-semibold text-pink-100 drop-shadow-sm">Try a Sample Product</span>
                                     </div>
                                 </button>

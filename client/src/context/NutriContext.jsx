@@ -1,5 +1,12 @@
 import { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
+// Import Sample Images
+import biscuitsImg from '../assets/biscuits.png';
+import noodlesImg from '../assets/noondles.png';
+import ketchupImg from '../assets/ketchup.png';
+import chocolateImg from '../assets/Chco.jpg';
+import cerealsImg from '../assets/cereals.jpg';
+
 
 const NutriContext = createContext();
 
@@ -18,6 +25,7 @@ export function NutriProvider({ children }) {
     const [isChatting, setIsChatting] = useState(false);
     const [capturedImageSrc, setCapturedImageSrc] = useState(null);
     const [chatAbortController, setChatAbortController] = useState(null);
+    const [analysisAbortController, setAnalysisAbortController] = useState(null);
 
     // Synchronize with history API
     useEffect(() => {
@@ -58,8 +66,28 @@ export function NutriProvider({ children }) {
         changeViewState('INPUT');
     };
 
+    const cancelAll = useCallback(() => {
+        if (analysisAbortController) {
+            analysisAbortController.abort();
+            setAnalysisAbortController(null);
+        }
+        if (chatAbortController) {
+            chatAbortController.abort();
+            setChatAbortController(null);
+        }
+        setIsChatting(false);
+    }, [analysisAbortController, chatAbortController]);
+
 
     const performAnalysis = async (payload) => {
+        // Abort previous if any
+        if (analysisAbortController) {
+            analysisAbortController.abort();
+        }
+
+        const controller = new AbortController();
+        setAnalysisAbortController(controller);
+
         // Use replace for loading state so Back skips it
         changeViewState('REASONING', true);
         setErrorMsg(null);
@@ -71,7 +99,8 @@ export function NutriProvider({ children }) {
             const res = await fetch(`${API_URL}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                signal: controller.signal
             });
 
             const data = await res.json();
@@ -82,9 +111,15 @@ export function NutriProvider({ children }) {
             // Replace loading with results so Back goes to INPUT
             changeViewState('CHAT', true);
         } catch (err) {
+            if (err.name === 'AbortError') {
+                console.log('Analysis aborted');
+                return;
+            }
             console.error(err);
             setErrorMsg(err.message || "Something went wrong.");
             changeViewState('INPUT', true);
+        } finally {
+            setAnalysisAbortController(null);
         }
     };
 
@@ -94,7 +129,6 @@ export function NutriProvider({ children }) {
         // Abort any previous request just in case
         if (chatAbortController) {
             chatAbortController.abort();
-            setChatAbortController(null);
         }
         const controller = new AbortController();
         setChatAbortController(controller);
@@ -145,11 +179,13 @@ export function NutriProvider({ children }) {
     const cancelChat = () => {
         if (chatAbortController) {
             chatAbortController.abort();
+            setChatAbortController(null);
         }
         setIsChatting(false);
     };
 
     const resetFlow = () => {
+        cancelAll();
         changeViewState('INPUT');
         setAnalysisResult(null);
         setErrorMsg(null);
@@ -158,6 +194,7 @@ export function NutriProvider({ children }) {
     };
 
     const goBack = () => {
+        cancelAll();
         window.history.back();
     };
 
@@ -200,11 +237,18 @@ export function NutriProvider({ children }) {
     };
 
     const analyzeSample = async (id) => {
-        // For now, use a generic placeholder or fetch the sample image URL if available
-        // Since we don't have the image bytes locally for the sample, we can use a placeholder
-        // or just not show an image.
-        // Let's use a placeholder for the sample.
-        setCapturedImageSrc("https://placehold.co/600x400/2e1065/FFF?text=Sample+Product");
+        // Map sample IDs to imported images
+        const sampleImages = {
+            'sample_01': biscuitsImg,
+            'sample_02': noodlesImg,
+            'sample_05': ketchupImg,
+            'sample_06': cerealsImg,
+            'sample_07': chocolateImg
+        };
+
+        const imageToUse = sampleImages[id] || "https://placehold.co/600x400/2e1065/FFF?text=Sample+Product";
+
+        setCapturedImageSrc(imageToUse);
         await performAnalysis({ sample_id: id });
     };
 
@@ -225,6 +269,7 @@ export function NutriProvider({ children }) {
         chatHistory,
         sendChatMessage,
         cancelChat,
+        cancelAll,
         capturedImageSrc
     };
 

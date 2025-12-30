@@ -12,16 +12,7 @@ export default function ExplanationView() {
             {/* Glassmorphism Card - Violet Dark */}
             <div className="bg-indigo-950/40 backdrop-blur-2xl rounded-3xl p-6 md:p-8 shadow-2xl border border-indigo-500/20 ring-1 ring-white/10 relative overflow-hidden">
 
-                {/* Back Button (Inside Card) */}
-                <button
-                    onClick={resetFlow}
-                    className="absolute top-6 left-6 text-indigo-300 hover:text-white transition-colors p-2 -ml-2 rounded-full hover:bg-white/10"
-                    title="Back"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-                </button>
-
-                <div className="space-y-8 mt-4">
+                <div className="space-y-8">
 
                     {/* Header: Score + Summary */}
                     <div className="flex gap-6 items-center pt-2">
@@ -42,16 +33,18 @@ export default function ExplanationView() {
                                         strokeDasharray={36 * 2 * Math.PI}
                                         strokeDashoffset={36 * 2 * Math.PI - (data.health_score / 100) * (36 * 2 * Math.PI)}
                                         strokeLinecap="round"
-                                        className={`${data.health_score >= 70 ? "text-emerald-500" :
-                                            data.health_score >= 40 ? "text-amber-400" :
-                                                "text-rose-500"
+                                        className={`${data.health_score >= 85 ? "text-emerald-500" :
+                                            data.health_score >= 65 ? "text-lime-500" :
+                                                data.health_score >= 40 ? "text-amber-400" :
+                                                    "text-rose-500"
                                             } drop-shadow-[0_0_10px_rgba(0,0,0,0.3)] transition-all duration-1000 ease-out`}
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className={`text-2xl font-extrabold ${data.health_score >= 70 ? "text-emerald-400" :
-                                        data.health_score >= 40 ? "text-amber-300" :
-                                            "text-rose-400"
+                                    <span className={`text-2xl font-extrabold ${data.health_score >= 85 ? "text-emerald-400" :
+                                        data.health_score >= 65 ? "text-lime-400" :
+                                            data.health_score >= 40 ? "text-amber-300" :
+                                                "text-rose-400"
                                         }`}>
                                         {data.health_score}
                                     </span>
@@ -66,22 +59,25 @@ export default function ExplanationView() {
                             </div>
                             <h2 className="text-lg md:text-xl font-bold leading-snug text-white drop-shadow-md">
                                 {(() => {
-                                    // Parse tags: {neg}...{/neg}, {pos}...{/pos}, {med}...{/med}
-                                    const text = data.summary || "";
-                                    const parts = text.split(/(\{.*?\}.*?\{\/.*?\})/g);
+                                    // Helper function for rich text tags: {neg}...{/neg}, {pos}...{/pos}, {med}...{/med}
+                                    const renderRichText = (text) => {
+                                        if (!text) return "";
+                                        const parts = text.split(/(\{.*?\}.*?\{\/.*?\})/g);
+                                        return parts.map((part, i) => {
+                                            if (part.startsWith("{neg}")) {
+                                                return <span key={i} className="text-rose-400 font-extrabold drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">{part.replace(/\{.*?\}/g, "")}</span>;
+                                            }
+                                            if (part.startsWith("{pos}")) {
+                                                return <span key={i} className="text-emerald-400 font-extrabold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]">{part.replace(/\{.*?\}/g, "")}</span>;
+                                            }
+                                            if (part.startsWith("{med}")) {
+                                                return <span key={i} className="text-amber-400 font-extrabold drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">{part.replace(/\{.*?\}/g, "")}</span>;
+                                            }
+                                            return part;
+                                        });
+                                    };
 
-                                    return parts.map((part, i) => {
-                                        if (part.startsWith("{neg}")) {
-                                            return <span key={i} className="text-rose-400 font-extrabold drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">{part.replace(/\{.*?\}/g, "")}</span>;
-                                        }
-                                        if (part.startsWith("{pos}")) {
-                                            return <span key={i} className="text-emerald-400 font-extrabold drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]">{part.replace(/\{.*?\}/g, "")}</span>;
-                                        }
-                                        if (part.startsWith("{med}")) {
-                                            return <span key={i} className="text-amber-400 font-extrabold drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">{part.replace(/\{.*?\}/g, "")}</span>;
-                                        }
-                                        return part;
-                                    });
+                                    return renderRichText(data.summary);
                                 })()}
                             </h2>
                         </div>
@@ -107,12 +103,30 @@ export default function ExplanationView() {
                                 dotColor = "bg-amber-400 shadow-amber-500/50";
                             }
 
+                            // Define the same helper here or move it up
+                            const renderRichText = (text) => {
+                                if (!text) return "";
+                                const parts = text.split(/(\{.*?\}.*?\{\/.*?\})/g);
+                                return parts.map((part, i) => {
+                                    if (part.startsWith("{neg}")) {
+                                        return <span key={i} className="text-rose-400 font-bold">{part.replace(/\{.*?\}/g, "")}</span>;
+                                    }
+                                    if (part.startsWith("{pos}")) {
+                                        return <span key={i} className="text-emerald-400 font-bold">{part.replace(/\{.*?\}/g, "")}</span>;
+                                    }
+                                    if (part.startsWith("{med}")) {
+                                        return <span key={i} className="text-amber-400 font-bold">{part.replace(/\{.*?\}/g, "")}</span>;
+                                    }
+                                    return part;
+                                });
+                            };
+
                             return (
                                 <div key={idx} className="bg-white/5 p-4 rounded-xl border border-white/10 flex gap-4 items-start transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-indigo-900/20 hover:bg-white/10 hover:border-indigo-400/30 cursor-default">
                                     <div className={`mt-1.5 min-w-[10px] h-[10px] rounded-full shrink-0 shadow-sm ${dotColor}`} />
                                     <div>
-                                        <h3 className={`font-bold text-base ${textColor} drop-shadow-sm`}>{point.ingredient}</h3>
-                                        <p className="text-sm text-indigo-100/80 leading-relaxed mt-0.5 font-light">{point.why_it_matters}</p>
+                                        <h3 className={`font-bold text-lg ${textColor} drop-shadow-sm`}>{point.ingredient}</h3>
+                                        <p className="text-base text-white leading-relaxed mt-0.5 font-normal">{renderRichText(point.why_it_matters)}</p>
                                     </div>
                                 </div>
                             );
