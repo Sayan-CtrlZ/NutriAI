@@ -2,9 +2,10 @@ import { createContext, useState, useContext, useEffect, useCallback } from 'rea
 
 // Import Sample Images
 import biscuitsImg from '../assets/biscuits.png';
-import noodlesImg from '../assets/noondles.png';
+import noodlesImg from '../assets/noodles.png';
 import ketchupImg from '../assets/ketchup.png';
 import chocolateImg from '../assets/Chco.jpg';
+import cocaImg from '../assets/coca.jpg';
 import cerealsImg from '../assets/cereals.jpg';
 
 
@@ -241,6 +242,7 @@ export function NutriProvider({ children }) {
         const sampleImages = {
             'sample_01': biscuitsImg,
             'sample_02': noodlesImg,
+            'sample_04': cocaImg,
             'sample_05': ketchupImg,
             'sample_06': cerealsImg,
             'sample_07': chocolateImg
